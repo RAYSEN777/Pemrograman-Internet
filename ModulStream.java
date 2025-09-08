@@ -27,7 +27,7 @@ public class ModulStream {
                 }
             }
         }
-a
+
         public void writeOutput() {
             String text = "qwerty";
             FileOutputStream file = null;
