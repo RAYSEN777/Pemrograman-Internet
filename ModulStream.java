@@ -1,4 +1,5 @@
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -72,6 +73,31 @@ public class ModulStream {
                 }
             }
         }
+
+        public void bufferOut(){
+            FileOutputStream file = null;
+            BufferedOutputStream buff = null;
+
+            String text = "qwerty";
+
+            try{
+                file = new FileOutputStream("C:\\Users\\ASUS\\Documents\\Pemrograman-Internet\\abcOut2.txt");
+                buff = new BufferedOutputStream(file);
+
+                buff.write(text.getBytes());
+                buff.flush();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            } finally {
+                if (file != null) {
+                    try {
+                        file.close();
+                    } catch (Exception el) {
+                        el.printStackTrace();
+                    }
+                }
+            } 
+        }
     }
 
     public static void main(String[] args) {
@@ -82,5 +108,6 @@ public class ModulStream {
         // io.writeOutput();  
         System.out.println("\n=================");
         io.bufferIn();
+        io.bufferOut();
     }
 }
