@@ -5,47 +5,62 @@ import java.util.zip.*;
 
 public class ExtractZipUI extends JFrame {
     private JTextField zipPathField, outDirField;
-    private JButton browseZipBtn, browseOutBtn, startExtractBtn;
+    private JButton cariZipBtn, cariOutBtn, startExtractBtn;
 
     private JTextField folderPathField;
     private JButton browseFolderBtn, startCompressBtn;
 
     public ExtractZipUI() {
-        setTitle("Compress dan Decompress");
-        setSize(600, 220);
+        setTitle("zip-in aja");
+        setSize(500, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         JTabbedPane tabs = new JTabbedPane();
-        tabs.add("Decompress", createExtractPanel());
-        tabs.add("Compress", createCompressPanel());
+        tabs.add("Dekompresi", extractP());
+        tabs.add("Kompresi", compressP());
 
         add(tabs);
     }
 
-    private JPanel createExtractPanel() {
-        JPanel panel = new JPanel(new GridLayout(3, 3, 5, 5));
+    private JPanel extractP() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         zipPathField = new JTextField();
         outDirField = new JTextField();
-        browseZipBtn = new JButton("Browse");
-        browseOutBtn = new JButton("Browse");
-        startExtractBtn = new JButton("Decompress");
+        cariZipBtn = new JButton("Cari");
+        cariOutBtn = new JButton("Cari");
+        startExtractBtn = new JButton("Dekompresi");
 
-        panel.add(new JLabel("Zip File:"));
-        panel.add(zipPathField);
-        panel.add(browseZipBtn);
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(new JLabel("Zip File:"), gbc);
 
-        panel.add(new JLabel("Output Folder:"));
-        panel.add(outDirField);
-        panel.add(browseOutBtn);
+        gbc.gridx = 1; gbc.weightx = 1.0;
+        panel.add(zipPathField, gbc);
 
-        panel.add(new JLabel());
-        panel.add(startExtractBtn);
-        panel.add(new JLabel());
+        gbc.gridx = 2; gbc.weightx = 0;
+        cariZipBtn.setPreferredSize(new Dimension(70, 25));
+        panel.add(cariZipBtn, gbc);
 
+        gbc.gridx = 0; gbc.gridy = 1;
+        panel.add(new JLabel("Output Folder:"), gbc);
+
+        gbc.gridx = 1; gbc.weightx = 1.0;
+        panel.add(outDirField, gbc);
+
+        gbc.gridx = 2; gbc.weightx = 0;
+        cariOutBtn.setPreferredSize(new Dimension(70, 25));
+        panel.add(cariOutBtn, gbc);
+
+        gbc.gridx = 1; gbc.gridy = 2; gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        startExtractBtn.setPreferredSize(new Dimension(120, 30));
+        panel.add(startExtractBtn, gbc);
         
-        browseZipBtn.addActionListener(e -> {
+        cariZipBtn.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -53,7 +68,7 @@ public class ExtractZipUI extends JFrame {
             }
         });
 
-        browseOutBtn.addActionListener(e -> {
+        cariOutBtn.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -73,29 +88,39 @@ public class ExtractZipUI extends JFrame {
             try {
                 File inputZip = new File(zipFile);
                 File outputDir = new File(outDir);
-
                 extractZip(inputZip, outputDir);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         });
+
         return panel;
     }
 
-    private JPanel createCompressPanel() {
-        JPanel panel = new JPanel(new GridLayout(2, 3, 5, 5));
+    private JPanel compressP() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         folderPathField = new JTextField();
-        browseFolderBtn = new JButton("Browse");
-        startCompressBtn = new JButton("Compress Folder");
+        browseFolderBtn = new JButton("Cari");
+        startCompressBtn = new JButton("Kompres Folder");
 
-        panel.add(new JLabel("Folder to Zip:"));
-        panel.add(folderPathField);
-        panel.add(browseFolderBtn);
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(new JLabel("Folder ke Zip:"), gbc);
 
-        panel.add(new JLabel());
-        panel.add(startCompressBtn);
-        panel.add(new JLabel());
+        gbc.gridx = 1; gbc.weightx = 1.0;
+        panel.add(folderPathField, gbc);
+
+        gbc.gridx = 2; gbc.weightx = 0;
+        browseFolderBtn.setPreferredSize(new Dimension(70, 25));
+        panel.add(browseFolderBtn, gbc);
+
+        gbc.gridx = 1; gbc.gridy = 1; gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        startCompressBtn.setPreferredSize(new Dimension(150, 30));
+        panel.add(startCompressBtn, gbc);
 
         browseFolderBtn.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
@@ -115,13 +140,13 @@ public class ExtractZipUI extends JFrame {
 
             try {
                 File folder = new File(folderPath);
-                File outZip = new File(folder.getParentFile(), folder.getName() + "_Compressed.zip");
-
+                File outZip = new File(folder.getParentFile(), folder.getName() + "_Kompres.zip");
                 compressFolder(folder, outZip);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         });
+
         return panel;
     }
 
@@ -143,7 +168,7 @@ public class ExtractZipUI extends JFrame {
                          BufferedOutputStream bOutStream = new BufferedOutputStream(fOutStream)) {
                         byte[] buffer = new byte[1024];
                         int len;
-                        while ((len = zInStream.read(buffer)) > 0) {
+                        while ((len = zInStream.read(buffer)) != -1) {
                             bOutStream.write(buffer, 0, len);
                         }
                     }
