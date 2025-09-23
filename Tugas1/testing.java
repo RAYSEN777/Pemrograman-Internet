@@ -9,18 +9,19 @@ public class testing {
 
         try {
             fInStream = new FileInputStream("Folder.zip");
-            ZipInputStream zInStream = new ZipInputStream(fInStream);
-            File outFile = new File("Tugas1", "Folder/iniFolder.zip");
+            try (ZipInputStream zInStream = new ZipInputStream(fInStream)) {
+                File outFile = new File("Tugas1", "Folder/iniFolder.zip");
 
 
-            
-            ZipEntry e; 
-            while ((e = zInStream.getNextEntry()) != null) {
-                System.out.println("Entry: " + e.getName());
-                zInStream.closeEntry();
+                
+                ZipEntry e; 
+                while ((e = zInStream.getNextEntry()) != null) {
+                    System.out.println("Entry: " + e.getName());
+                    zInStream.closeEntry();
+                }
+
+                System.out.println("parent : " + outFile.getParentFile());
             }
-
-            System.out.println("parent : " + outFile.getParentFile());
             System.out.println();
         } catch (IOException ex) {
             ex.printStackTrace();
