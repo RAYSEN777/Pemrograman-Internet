@@ -206,7 +206,7 @@ public class ExtractZipUI extends JFrame {
             }
         } else {
             try (FileInputStream fIn = new FileInputStream(file);
-                 BufferedInputStream bIn = new BufferedInputStream(fIn)) {
+                BufferedInputStream bIn = new BufferedInputStream(fIn)) {
                 zOut.putNextEntry(new ZipEntry(entryName));
                 byte[] buffer = new byte[1024];
                 int len;
