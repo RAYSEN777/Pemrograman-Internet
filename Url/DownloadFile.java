@@ -1,32 +1,38 @@
-import java.net.*;
 import java.io.*;
+import java.net.*;
 
 public class DownloadFile {
-    public static void main(String[] args) {
+    public static void main(String args[]) {
         InputStream in = null;
-        FileOutputStream fout = null;
+        FileOutputStream fOut = null;
 
-        try{
-            URL remoteFile = new URL("http://dl.vafamusic.com/Full%20Album/bts/320/BTS-Boy-WithLuv%20%28VafaMusic%29.mp3");
+        try {
+            URL remoteFile = new URL(
+                "https://filesamples.com/samples/image/jpg/sample_5184%C3%973456.jpg"
+            );
             URLConnection fileStream = remoteFile.openConnection();
-            fout = new FileOutputStream("Lagu.mp3");
+
             in = fileStream.getInputStream();
+            fOut = new FileOutputStream("Musik.jpg");
 
             int data;
             while ((data = in.read()) != -1) {
-                fout.write(data);
+                fOut.write(data);
             }
-        } catch(Exception e){
-            e.printStackTrace();
+
+            System.out.println("File telah berhasil didownload");
+        } catch (Exception ex) {
+            ex.printStackTrace();
         } finally {
-            System.out.println("File Berhasil Didownload");
             try {
-                in.close();
-                fout.flush();
-                fout.close();
-            } catch (Exception e){
+                if (in != null) in.close();
+                if (fOut != null) {
+                    fOut.flush();
+                    fOut.close();
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-    } 
+    }
 }
