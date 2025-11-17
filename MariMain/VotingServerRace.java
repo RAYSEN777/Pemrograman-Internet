@@ -4,11 +4,11 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class VotingServer {
+public class VotingServerRace {
     private static final int PORT = 1234;
     private static final Map<String, Integer> hasilVoting = new LinkedHashMap<>();
-    private static final Set<String> sudahVote = new HashSet<>(); 
-    private static volatile boolean isRunning = true; 
+    private static final Set<String> sudahVote = new HashSet<>();
+    private static volatile boolean isRunning = true;
 
     public static void main(String[] args) {
         System.out.println("=== SERVER VOTING ONLINE ===");
@@ -50,6 +50,19 @@ public class VotingServer {
 
         System.out.println("\n=== Server Voting Dimatikan ===");
     }
+
+    private static void tampilkanHasilAkhir() {
+        System.out.println("\nHASIL AKHIR VOTING:");
+        
+        
+        synchronized (hasilVoting) {
+            for (Map.Entry<String, Integer> entry : hasilVoting.entrySet()) {
+                System.out.println(" - Kandidat " + entry.getKey() + " : " + entry.getValue() + " suara");
+            }
+            System.out.println("--------------------------------------");
+            System.out.println("Jumlah total pemilih unik: " + sudahVote.size());
+        }
+    }
     
     private static class ClientHandler implements Runnable {
         private final Socket client;
@@ -57,11 +70,10 @@ public class VotingServer {
         public ClientHandler(Socket socket) {
             this.client = socket;
         }
-
         @Override
+
         public void run() {
             String ipClient = client.getInetAddress().getHostAddress();
-
             try (
                 Scanner input = new Scanner(client.getInputStream());
                 PrintWriter output = new PrintWriter(client.getOutputStream(), true)
@@ -81,31 +93,43 @@ public class VotingServer {
                     }
                 }
                 String pilihan = input.nextLine().trim().toUpperCase();
+          
+                if (hasilVoting.containsKey(pilihan)) {
 
-                synchronized (hasilVoting) {
-                    if (hasilVoting.containsKey(pilihan)) {
-                        hasilVoting.put(pilihan, hasilVoting.get(pilihan) + 1);
-                        synchronized (sudahVote) {
-                            sudahVote.add(ipClient); 
-                        }
-                        output.println("Pilihan " + pilihan + " telah dicatat.");
-                    } else {
-                        output.println("Pilihan tidak valid.");
+                    System.out.println("Thread [" + ipClient + "] (Pilihan " + pilihan + ") MEMBACA jumlah vote...");
+                    
+                    int voteSaatIni = hasilVoting.get(pilihan);
+                    System.out.println("Thread [" + ipClient + "] ... nilai saat ini dibaca: " + voteSaatIni);
+                    System.out.println("Thread [" + ipClient + "] ... sedang memproses ...");
+                    try {
+                        Thread.sleep(2000); 
+                    } catch (InterruptedException e) {}
+
+                    int voteBaru = voteSaatIni + 1;
+                    hasilVoting.put(pilihan, voteBaru);
+                    System.out.println("Thread [" + ipClient + "] MENULIS jumlah vote baru: " + voteBaru);
+
+                    synchronized (sudahVote) {
+                        sudahVote.add(ipClient);
                     }
+                    output.println("Pilihan " + pilihan + " telah dicatat.");
 
+                } else {
+                    output.println("Pilihan tidak valid.");
+                }
+            
+                synchronized (hasilVoting) {
                     output.println("\n=== Hasil Voting Saat Ini ===");
                     for (Map.Entry<String, Integer> entry : hasilVoting.entrySet()) {
                         output.println("Kandidat " + entry.getKey() + " : " + entry.getValue() + " suara");
                     }
 
-                    
                     System.out.println("\nHasil Voting Diperbarui:");
                     for (Map.Entry<String, Integer> entry : hasilVoting.entrySet()) {
                         System.out.println(" - Kandidat " + entry.getKey() + " : " + entry.getValue() + " suara");
                     }
                     System.out.println("--------------------------------------");
                 }
-
             } catch (IOException e) {
                 System.out.println("Koneksi client terputus (" + ipClient + ")");
             } finally {
@@ -116,14 +140,5 @@ public class VotingServer {
                 }
             }
         }
-    }
-
-    private static void tampilkanHasilAkhir() {
-        System.out.println("\nHASIL AKHIR VOTING:");
-        for (Map.Entry<String, Integer> entry : hasilVoting.entrySet()) {
-            System.out.println(" - Kandidat " + entry.getKey() + " : " + entry.getValue() + " suara");
-        }
-        System.out.println("--------------------------------------");
-        System.out.println("Jumlah total pemilih unik: " + sudahVote.size());
     }
 }

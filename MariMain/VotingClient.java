@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.*;
 
 public class VotingClient {
-    private static final String SERVER_IP = "10.70.12.164"; 
+    private static final String SERVER_IP = "192.168.1.23"; 
     private static final int PORT = 1234;
 
     public static void main(String[] args) {
